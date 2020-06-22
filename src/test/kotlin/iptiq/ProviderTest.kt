@@ -78,7 +78,7 @@ class ProviderTest {
 
         provider.markHealthy()
 
-        assertThat(provider.check()).isFalse()
+        assertThat(provider.check()).isTrue()
     }
 
 }

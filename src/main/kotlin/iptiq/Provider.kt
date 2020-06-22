@@ -8,6 +8,7 @@ class Provider(
 
     companion object {} // for test instances
 
+    // thinking whether this should be part of the LoadBalancer instead...
     private var _excluded = false
     val excluded get() = _excluded
 
