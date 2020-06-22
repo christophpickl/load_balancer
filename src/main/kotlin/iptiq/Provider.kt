@@ -4,7 +4,7 @@ import java.util.UUID
 
 class Provider {
 
-    private val id = ProviderId.random()
+    val id = ProviderId.random()
 
     /** Unique identifier of this instance */
     fun get() = id

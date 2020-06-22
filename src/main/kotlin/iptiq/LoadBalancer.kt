@@ -1,7 +1,5 @@
 package iptiq
 
-import java.lang.Exception
-
 private const val MAXIMUM_PROVIDERS = 10
 
 class LoadBalancer {
@@ -17,6 +15,11 @@ class LoadBalancer {
         registeredProviders += providers
     }
 
+    fun get(): ProviderId {
+        TODO()
+    }
+
 }
 
 class OutOfProviderException : Exception("Maximum number of $MAXIMUM_PROVIDERS possible providers reached!")
+class NoProviderAvailableException : IllegalStateException("No provider is currently available!")
