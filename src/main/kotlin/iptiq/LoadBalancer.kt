@@ -1,11 +1,19 @@
 package iptiq
 
+import mu.KotlinLogging.logger
+
 private const val MAXIMUM_PROVIDERS = 10
+
+interface ScheduledJob {
+    fun asyncJob()
+}
+
 
 class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm()
-) {
+) : ScheduledJob {
 
+    private val log = logger {}
     private val registeredProviders = mutableListOf<Provider>()
 
     val providers: List<Provider> get() = registeredProviders
@@ -40,6 +48,13 @@ class LoadBalancer(
     private fun ensureContains(provider: Provider) {
         if (!registeredProviders.contains(provider)) {
             throw ProviderNotPresentException(provider)
+        }
+    }
+
+    override fun asyncJob() {
+        registeredProviders.filter { !it.check() }.forEach {
+            log.info { "Going to exclude unhealthy provider: $it" }
+            it.exclude()
         }
     }
 

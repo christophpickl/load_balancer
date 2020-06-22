@@ -112,4 +112,14 @@ class LoadBalancerTest {
         assertThat(provider.excluded).isFalse()
     }
 
+    fun `Given balancer with unhealthy provider When execute async job Then exclude it`() {
+        val provider = Provider.any()
+            .markUnhealthy()
+        val balancer = LoadBalancer()
+            .register(provider)
+
+        balancer.asyncJob()
+
+        assertThat(provider.excluded).isTrue()
+    }
 }
