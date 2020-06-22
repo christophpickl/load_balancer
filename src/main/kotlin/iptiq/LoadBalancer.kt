@@ -4,11 +4,6 @@ import mu.KotlinLogging.logger
 
 private const val MAXIMUM_PROVIDERS = 10
 
-interface ScheduledJob {
-    fun asyncJob()
-}
-
-
 class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm()
 ) : ScheduledJob {
@@ -21,6 +16,7 @@ class LoadBalancer(
     fun register(vararg providers: Provider) = register(providers.toList())
 
     fun register(providers: List<Provider>) = apply {
+        log.debug { "Register providers: $providers" }
         if (registeredProviders.size >= MAXIMUM_PROVIDERS) {
             throw OutOfProviderException()
         }
@@ -30,6 +26,7 @@ class LoadBalancer(
     fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).get()
 
     fun exclude(provider: Provider) = apply {
+        log.debug { "Exclude: $provider" }
         ensureContains(provider)
         if (provider.excluded) {
             throw AlreadyExcludedException(provider)
@@ -38,6 +35,7 @@ class LoadBalancer(
     }
 
     fun include(provider: Provider) = apply {
+        log.debug { "Include: $provider" }
         ensureContains(provider)
         if (!provider.excluded) {
             throw AlreadyIncludedException(provider)
@@ -52,6 +50,7 @@ class LoadBalancer(
     }
 
     override fun asyncJob() {
+        log.debug { "Checking unhealthy providers ..." }
         registeredProviders.filter { !it.check() }.forEach {
             log.info { "Going to exclude unhealthy provider: $it" }
             it.exclude()
