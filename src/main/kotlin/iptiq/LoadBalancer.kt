@@ -2,7 +2,9 @@ package iptiq
 
 private const val MAXIMUM_PROVIDERS = 10
 
-class LoadBalancer {
+class LoadBalancer(
+    private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm()
+) {
 
     private val registeredProviders = mutableListOf<Provider>()
 
@@ -17,14 +19,9 @@ class LoadBalancer {
         registeredProviders += providers
     }
 
-    fun get(): ProviderId {
-        if (registeredProviders.isEmpty()) {
-            throw NoProviderAvailableException()
-        }
-        return registeredProviders.random().id
-    }
+    fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).id
 
 }
 
 class OutOfProviderException : Exception("Maximum number of $MAXIMUM_PROVIDERS possible providers reached!")
-class NoProviderAvailableException : IllegalStateException("No provider is currently available!")
+
