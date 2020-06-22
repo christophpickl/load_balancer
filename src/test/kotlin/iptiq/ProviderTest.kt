@@ -1,6 +1,7 @@
 package iptiq
 
 import assertk.assertThat
+import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
 import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
@@ -79,6 +80,21 @@ class ProviderTest {
         provider.markHealthy()
 
         assertThat(provider.check()).isTrue()
+    }
+
+    fun `Given default provider When get processed requests Then return 0`() {
+        val provider = Provider()
+
+        assertThat(provider.requestsBeingProcessed).isEqualTo(0)
+    }
+
+    fun `When process requests Then number of requests processed increases`() {
+        val provider = Provider()
+        val oldCount = provider.requestsBeingProcessed
+
+        provider.processRequest()
+
+        assertThat(provider.requestsBeingProcessed).isEqualTo(oldCount + 1)
     }
 
 }
