@@ -16,7 +16,10 @@ class LoadBalancer {
     }
 
     fun get(): ProviderId {
-        TODO()
+        if (registeredProviders.isEmpty()) {
+            throw NoProviderAvailableException()
+        }
+        return registeredProviders.random().id
     }
 
 }
