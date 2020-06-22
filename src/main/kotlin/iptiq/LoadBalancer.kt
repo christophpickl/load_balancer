@@ -8,8 +8,13 @@ class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm()
 ) : ScheduledJob {
 
+    companion object {
+        private const val HEARTBACK_CHECK_COUNT = 2
+    }
+
     private val log = logger {}
     private val registeredProviders = mutableListOf<Provider>()
+    private val excludedPositiveHealthChecks = mutableMapOf<Provider, Int>()
 
     val providers: List<Provider> get() = registeredProviders
 
@@ -51,9 +56,22 @@ class LoadBalancer(
 
     override fun asyncJob() {
         log.debug { "Checking unhealthy providers ..." }
-        registeredProviders.filter { !it.check() }.forEach {
-            log.info { "Going to exclude unhealthy provider: $it" }
-            it.exclude()
+        registeredProviders.forEach { provider ->
+            val isHealthy = provider.check()
+            if (!isHealthy && !provider.excluded) {
+                log.info { "Going to exclude unhealthy provider: $provider" }
+                excludedPositiveHealthChecks += provider to 0
+                provider.exclude()
+            } else if (excludedPositiveHealthChecks.contains(provider)) {
+                val newCount = excludedPositiveHealthChecks[provider]!! + 1
+                if (isHealthy && newCount == HEARTBACK_CHECK_COUNT && provider.excluded) {
+                    log.info { "Marking provider as healthy again: $provider" }
+                    provider.include()
+                    excludedPositiveHealthChecks.remove(provider)
+                } else {
+                    excludedPositiveHealthChecks[provider] = newCount
+                }
+            }
         }
     }
 
