@@ -11,3 +11,5 @@ class LoadBalancer {
     }
 
 }
+
+class OutOfProviderException : Exception("Maximum number of possible providers reached!")
