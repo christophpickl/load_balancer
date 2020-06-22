@@ -8,6 +8,7 @@ class Provider {
 
     /** Unique identifier of this instance */
     fun get() = id
+
 }
 
 data class ProviderId(
