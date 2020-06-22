@@ -11,6 +11,8 @@ class Provider(
     private var _excluded = false
     val excluded get() = _excluded
 
+    private var healthy = true
+
     /** Unique identifier of this instance */
     fun get() = id
 
@@ -22,6 +24,16 @@ class Provider(
     fun exclude() = apply {
         check(!_excluded)
         _excluded = true
+    }
+
+    fun check() = healthy
+
+    fun markUnhealthy() = apply {
+        healthy = false
+    }
+
+    fun markHealthy() = apply {
+        healthy = true
     }
 
     override fun toString() = "Provider[id=$id]"

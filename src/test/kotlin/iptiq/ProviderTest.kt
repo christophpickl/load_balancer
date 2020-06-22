@@ -58,4 +58,27 @@ class ProviderTest {
         }.isFailure().isInstanceOf(IllegalStateException::class)
     }
 
+    fun `Given default provider When check Then return true`() {
+        val provider = Provider()
+
+        assertThat(provider.check()).isTrue()
+    }
+
+    fun `Given unhealthy provider When check Then return false`() {
+        val provider = Provider()
+
+        provider.markUnhealthy()
+
+        assertThat(provider.check()).isFalse()
+    }
+
+    fun `Given unhealthy provider When mark healthy and check Then return true`() {
+        val provider = Provider()
+            .markUnhealthy()
+
+        provider.markHealthy()
+
+        assertThat(provider.check()).isFalse()
+    }
+
 }
