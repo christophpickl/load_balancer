@@ -7,10 +7,11 @@ import org.testng.annotations.Test
 @Test
 class RoundRobinAlgorithmTest : ProvideAlgorithmTest() {
 
+    private val provider1 = Provider.testInstance1()
+    private val provider2 = Provider.testInstance2()
+
     // this test can be improved as it tests multiple use cases, but decided to be pragmatic here
     fun `Given several providers When select multiple times Then return in order providers`() {
-        val provider1 = Provider()
-        val provider2 = Provider()
         val providers = listOf(provider1, provider2)
         val algorithm = algorithm()
 

@@ -2,12 +2,16 @@ package iptiq
 
 import java.util.UUID
 
-class Provider {
+class Provider(
+    val id: ProviderId = ProviderId.random()
+) {
 
-    val id = ProviderId.random()
+    companion object // for test instances
 
     /** Unique identifier of this instance */
     fun get() = id
+
+    override fun toString() = "Provider[id=$id]"
 
 }
 

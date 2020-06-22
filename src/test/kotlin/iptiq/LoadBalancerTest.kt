@@ -10,7 +10,7 @@ import org.testng.annotations.Test
 @Test
 class LoadBalancerTest {
 
-    private val provider = Provider()
+    private val provider = Provider.any()
     private val maximumProviders = 10
 
     fun `Given empty balancer When register a provider Then balancer contains that provider`() {

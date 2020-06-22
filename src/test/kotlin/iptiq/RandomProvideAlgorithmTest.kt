@@ -10,7 +10,7 @@ class RandomProvideAlgorithmTest : ProvideAlgorithmTest() {
     override fun algorithm() = RandomProvideAlgorithm()
 
     fun `When select from multiple providers Then likely to get different providers`() {
-        val providers = listOf(Provider(), Provider())
+        val providers = listOf(Provider.any(), Provider.any())
         val providerCount = providers.associateWith { 0 }.toMutableMap()
 
         1.rangeTo(100).forEach { _ ->
