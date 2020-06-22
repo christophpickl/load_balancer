@@ -8,7 +8,9 @@ class LoadBalancer {
 
     val providers: List<Provider> get() = registeredProviders
 
-    fun register(providers: List<Provider>) {
+    fun register(vararg providers: Provider) = register(providers.toList())
+
+    fun register(providers: List<Provider>) = apply {
         if (registeredProviders.size >= MAXIMUM_PROVIDERS) {
             throw OutOfProviderException()
         }
