@@ -4,16 +4,18 @@ import assertk.assertThat
 import assertk.assertions.containsExactly
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFailure
+import assertk.assertions.isFalse
 import assertk.assertions.isInstanceOf
+import assertk.assertions.isTrue
 import org.testng.annotations.Test
 
 @Test
 class LoadBalancerTest {
 
-    private val provider = Provider.any()
     private val maximumProviders = 10
 
     fun `Given empty balancer When register a provider Then balancer contains that provider`() {
+        val provider = Provider.any()
         val balancer = LoadBalancer()
 
         balancer.register(provider)
@@ -22,7 +24,9 @@ class LoadBalancerTest {
     }
 
     fun `Given balancer with maximum providers When register a provider Then fail`() {
-        val balancer = LoadBalancer().register(1.rangeTo(maximumProviders).map { Provider() })
+        val provider = Provider.any()
+        val balancer = LoadBalancer()
+            .register(1.rangeTo(maximumProviders).map { Provider() })
 
         assertThat {
             balancer.register(provider)
@@ -39,7 +43,9 @@ class LoadBalancerTest {
     }
 
     fun `Given balancer with a provider When get provider Then return that provider's ID`() {
-        val balancer = LoadBalancer().register(provider)
+        val provider = Provider.any()
+        val balancer = LoadBalancer()
+            .register(provider)
 
         val id = balancer.get()
 
@@ -47,12 +53,16 @@ class LoadBalancerTest {
     }
 
     fun `When exclude non-existing provider Then fail`() {
+        val provider = Provider.any()
+
         assertThat {
-            LoadBalancer().exclude(provider)
-        }.isFailure().isInstanceOf(NotAvailableForExclusionException::class)
+            LoadBalancer()
+                .exclude(provider)
+        }.isFailure().isInstanceOf(ProviderNotPresentException::class)
     }
 
     fun `Given balancer with excluded provider When exclude it again Then fail`() {
+        val provider = Provider.any()
         val balancer = LoadBalancer()
             .register(provider)
             .exclude(provider)
@@ -60,6 +70,46 @@ class LoadBalancerTest {
         assertThat {
             balancer.exclude(provider)
         }.isFailure().isInstanceOf(AlreadyExcludedException::class)
+    }
+
+    fun `Given balancer with provider When exclude it again Then is excluded`() {
+        val provider = Provider.any()
+        val balancer = LoadBalancer()
+            .register(provider)
+
+        balancer.exclude(provider)
+
+        assertThat(provider.excluded).isTrue()
+    }
+
+    fun `When include non-existing provider Then fail`() {
+        val provider = Provider.any()
+
+        assertThat {
+            LoadBalancer()
+                .include(provider)
+        }.isFailure().isInstanceOf(ProviderNotPresentException::class)
+    }
+
+    fun `Given balancer with registered provider When include it Then fail`() {
+        val provider = Provider.any()
+        val balancer = LoadBalancer()
+            .register(provider)
+
+        assertThat {
+            balancer.include(provider)
+        }.isFailure().isInstanceOf(AlreadyIncludedException::class)
+    }
+
+    fun `Given balancer with excluded provider When include it again Then is included`() {
+        val provider = Provider.any()
+        val balancer = LoadBalancer()
+            .register(provider)
+            .exclude(provider)
+
+        balancer.include(provider)
+
+        assertThat(provider.excluded).isFalse()
     }
 
 }
