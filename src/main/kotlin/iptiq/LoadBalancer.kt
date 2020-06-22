@@ -21,7 +21,17 @@ class LoadBalancer(
 
     fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).get()
 
+    fun exclude(provider: Provider) = apply {
+
+    }
+
 }
 
-class OutOfProviderException : Exception("Maximum number of $MAXIMUM_PROVIDERS possible providers reached!")
+class OutOfProviderException :
+    Exception("Maximum number of $MAXIMUM_PROVIDERS possible providers reached!")
 
+class NotAvailableForExclusionException(provider: Provider) :
+    Exception("The provider (${provider.get()} can not be excluded as it is not present!")
+
+class AlreadyExcludedException(provider: Provider) :
+    Exception("The provider (${provider.get()}) was already excluded!")

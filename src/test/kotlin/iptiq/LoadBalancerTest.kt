@@ -46,4 +46,20 @@ class LoadBalancerTest {
         assertThat(id).isEqualTo(provider.get())
     }
 
+    fun `When exclude non-existing provider Then fail`() {
+        assertThat {
+            LoadBalancer().exclude(provider)
+        }.isFailure().isInstanceOf(NotAvailableForExclusionException::class)
+    }
+
+    fun `Given balancer with excluded provider When exclude it again Then fail`() {
+        val balancer = LoadBalancer()
+            .register(provider)
+            .exclude(provider)
+
+        assertThat {
+            balancer.exclude(provider)
+        }.isFailure().isInstanceOf(AlreadyExcludedException::class)
+    }
+
 }
