@@ -16,4 +16,11 @@ abstract class ProvideAlgorithmTest {
         }.isFailure().isInstanceOf(NoProviderAvailableException::class)
     }
 
+    fun `When select from single excluded provider Then fail`() {
+        assertThat {
+            val provider = Provider.any().apply { exclude() }
+            algorithm().selectFrom(listOf(provider))
+        }.isFailure().isInstanceOf(NoProviderAvailableException::class)
+    }
+
 }
