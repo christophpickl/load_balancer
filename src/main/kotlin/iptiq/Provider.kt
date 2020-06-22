@@ -3,7 +3,7 @@ package iptiq
 import java.util.UUID
 
 class Provider(
-    val id: ProviderId = ProviderId.random()
+    private val id: ProviderId = ProviderId.random()
 ) {
 
     companion object // for test instances

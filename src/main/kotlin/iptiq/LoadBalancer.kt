@@ -19,7 +19,7 @@ class LoadBalancer(
         registeredProviders += providers
     }
 
-    fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).id
+    fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).get()
 
 }
 

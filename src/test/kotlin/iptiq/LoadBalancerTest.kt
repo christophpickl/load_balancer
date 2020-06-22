@@ -43,7 +43,7 @@ class LoadBalancerTest {
 
         val id = balancer.get()
 
-        assertThat(id).isEqualTo(provider.id)
+        assertThat(id).isEqualTo(provider.get())
     }
 
 }
