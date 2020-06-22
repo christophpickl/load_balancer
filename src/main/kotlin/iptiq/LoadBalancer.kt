@@ -4,11 +4,13 @@ import mu.KotlinLogging.logger
 
 class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm(),
-    private val maximumProviders: Int = DEFAULT_MAXIMUM_PROVIDERS
+    private val maximumProviders: Int = DEFAULT_MAXIMUM_PROVIDERS,
+    private val maximumRequestsPerProviders: Int = DEFAULT_MAXIMUM_REQUESTS_PER_PROVIDER
 ) : ScheduledJob {
 
     companion object {
         private const val DEFAULT_MAXIMUM_PROVIDERS = 10
+        private const val DEFAULT_MAXIMUM_REQUESTS_PER_PROVIDER = 5
         private const val HEARTBACK_CHECK_COUNT = 2
     }
 
@@ -28,7 +30,17 @@ class LoadBalancer(
         registeredProviders += providers
     }
 
-    fun get(): ProviderId = provideAlgorithm.selectFrom(registeredProviders).get()
+    fun get() = getProvider().get()
+
+    fun processRequest() {
+        val aliveProviders = registeredProviders.filter { !it.excluded }
+        val maxRequests = aliveProviders.count() * maximumRequestsPerProviders
+        val currentRequests = aliveProviders.sumBy { it.requestsBeingProcessed }
+        if (currentRequests == maxRequests) {
+            throw MaximumRequestsReachedException(maxRequests)
+        }
+        getProvider().processRequest()
+    }
 
     fun exclude(provider: Provider) = apply {
         log.debug { "Exclude: $provider" }
@@ -47,6 +59,8 @@ class LoadBalancer(
         }
         provider.include()
     }
+
+    private fun getProvider() = provideAlgorithm.selectFrom(registeredProviders)
 
     private fun ensureContains(provider: Provider) {
         if (!registeredProviders.contains(provider)) {
@@ -88,3 +102,6 @@ class AlreadyExcludedException(provider: Provider) :
 
 class AlreadyIncludedException(provider: Provider) :
     Exception("The provider (${provider.get()}) was already included!")
+
+class MaximumRequestsReachedException(maximumRequests: Int) :
+    Exception("The maximum number of requests $maximumRequests is reached!")

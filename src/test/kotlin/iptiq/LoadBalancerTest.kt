@@ -122,4 +122,27 @@ class LoadBalancerTest {
 
         assertThat(provider.excluded).isTrue()
     }
+
+    fun `Given balancer with 0 max requests When process request Then fail`() {
+        val provider = Provider.any()
+        val balancer = LoadBalancer(
+            maximumRequestsPerProviders = 0
+        ).register(provider)
+
+        assertThat {
+            balancer.processRequest()
+        }.isFailure().isInstanceOf(MaximumRequestsReachedException::class)
+    }
+
+    fun `Given provider with valid balancer When process request Then provider's processed requests increases`() {
+        val provider = Provider.any()
+        val oldCount = provider.requestsBeingProcessed
+        val balancer = LoadBalancer(
+            maximumRequestsPerProviders = 1
+        ).register(provider)
+
+        balancer.processRequest()
+
+        assertThat(provider.requestsBeingProcessed).isEqualTo(oldCount + 1)
+    }
 }
