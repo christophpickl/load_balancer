@@ -2,8 +2,6 @@ package iptiq
 
 import mu.KotlinLogging.logger
 
-
-
 class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm(),
     private val maximumProviders: Int = DEFAULT_MAXIMUM_PROVIDERS

@@ -6,7 +6,7 @@ class Provider(
     private val id: ProviderId = ProviderId.random()
 ) {
 
-    companion object {} // for test instances
+    companion object; // for test instances
 
     // thinking whether this should be part of the LoadBalancer instead...
     private var _excluded = false
