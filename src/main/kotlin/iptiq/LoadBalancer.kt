@@ -2,13 +2,15 @@ package iptiq
 
 import mu.KotlinLogging.logger
 
-private const val MAXIMUM_PROVIDERS = 10
+
 
 class LoadBalancer(
-    private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm()
+    private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm(),
+    private val maximumProviders: Int = DEFAULT_MAXIMUM_PROVIDERS
 ) : ScheduledJob {
 
     companion object {
+        private const val DEFAULT_MAXIMUM_PROVIDERS = 10
         private const val HEARTBACK_CHECK_COUNT = 2
     }
 
@@ -22,8 +24,8 @@ class LoadBalancer(
 
     fun register(providers: List<Provider>) = apply {
         log.debug { "Register providers: $providers" }
-        if (registeredProviders.size >= MAXIMUM_PROVIDERS) {
-            throw OutOfProviderException()
+        if (registeredProviders.size >= DEFAULT_MAXIMUM_PROVIDERS) {
+            throw OutOfProviderException(maximumProviders)
         }
         registeredProviders += providers
     }
@@ -77,8 +79,8 @@ class LoadBalancer(
 
 }
 
-class OutOfProviderException :
-    Exception("Maximum number of $MAXIMUM_PROVIDERS possible providers reached!")
+class OutOfProviderException(maximumProviders: Int) :
+    Exception("Maximum number of $maximumProviders possible providers reached!")
 
 class ProviderNotPresentException(provider: Provider) :
     Exception("The provider (${provider.get()} is not present in load balancer!")
