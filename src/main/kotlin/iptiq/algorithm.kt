@@ -26,7 +26,6 @@ class RandomProvideAlgorithm : ProvideAlgorithmTemplate() {
     }
 }
 
-// TODO support changing registered providers while using this algorithm
 class RoundRobinAlgorithm : ProvideAlgorithmTemplate() {
 
     private var currentSelected: Provider? = null

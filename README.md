@@ -4,12 +4,6 @@ Just an assignment got from a job hiring process.
 
 See `requirements.pdf` file for the instructions.
 
-## How to run
-
-Change your current working directory to the project root folder and simply run:
-
-    $ ./gradlew run
-
 # Requirements
 
 ## Overview
@@ -37,3 +31,16 @@ Pay attention to the following:
 * Readability of the code
 * Flexibility of the code towards potential evolution
 * YAGNI/KISS/DRY
+
+## Possible Improvements
+
+* Full integration test
+* Round robin algorithm support of changing providers
+* Algorithm should be closer entangled with the set of registered providers
+* Use concurrency safe data structures for use in a multi-threaded/coroutine environment
+* Split responsibilities of the `Provider` class
+* Rename the generic `get()` method (into property with a meaningful name)
+* Use a proper framework for the scheduling
+* Make random algorithm better testable by injecting some `Random` instance
+* Split `LoadBalancer` class base don seperate concerns
+* Feature to unregister providers

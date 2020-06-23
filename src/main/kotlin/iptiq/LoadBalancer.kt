@@ -69,22 +69,28 @@ class LoadBalancer(
     }
 
     override fun asyncJob() {
+        checkProviders()
+    }
+
+    private fun checkProviders() {
         log.debug { "Checking unhealthy providers ..." }
-        registeredProviders.forEach { provider ->
-            val isHealthy = provider.check()
-            if (!isHealthy && !provider.excluded) {
-                log.info { "Going to exclude unhealthy provider: $provider" }
-                excludedPositiveHealthChecks += provider to 0
-                provider.exclude()
-            } else if (excludedPositiveHealthChecks.contains(provider)) {
-                val newCount = excludedPositiveHealthChecks[provider]!! + 1
-                if (isHealthy && newCount == HEARTBACK_CHECK_COUNT && provider.excluded) {
-                    log.info { "Marking provider as healthy again: $provider" }
-                    provider.include()
-                    excludedPositiveHealthChecks.remove(provider)
-                } else {
-                    excludedPositiveHealthChecks[provider] = newCount
-                }
+        registeredProviders.forEach(::checkProvider)
+    }
+
+    private fun checkProvider(provider: Provider) {
+        val isHealthy = provider.check()
+        if (!isHealthy && !provider.excluded) {
+            log.info { "Going to exclude unhealthy provider: $provider" }
+            excludedPositiveHealthChecks += provider to 0
+            provider.exclude()
+        } else if (excludedPositiveHealthChecks.contains(provider)) {
+            val newCount = excludedPositiveHealthChecks[provider]!! + 1
+            if (isHealthy && newCount == HEARTBACK_CHECK_COUNT && provider.excluded) {
+                log.info { "Marking provider as healthy again: $provider" }
+                provider.include()
+                excludedPositiveHealthChecks.remove(provider)
+            } else {
+                excludedPositiveHealthChecks[provider] = newCount
             }
         }
     }

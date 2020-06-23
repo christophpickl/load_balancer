@@ -2,19 +2,19 @@ package iptiq
 
 import java.util.UUID
 
-class Provider(
+data class Provider(
     private val id: ProviderId = ProviderId.random()
 ) {
 
     companion object // for test instances
 
-    val excluded get() = _excluded
-    val requestsBeingProcessed get() = _requestsBeingProcessed
+    var excluded = false
+        private set
+    var requestsBeingProcessed = 0
+        private set
 
     // thinking whether this should be part of the LoadBalancer instead...
-    private var _excluded = false
     private var healthy = true
-    private var _requestsBeingProcessed = 0
 
 
     /** Unique identifier of this instance */
@@ -22,17 +22,17 @@ class Provider(
 
     fun processRequest() {
         // retrieve request object, process it / apply some logic
-        _requestsBeingProcessed++
+        requestsBeingProcessed++
     }
 
     fun include() = apply {
-        check(_excluded)
-        _excluded = false
+        check(excluded)
+        excluded = false
     }
 
     fun exclude() = apply {
-        check(!_excluded)
-        _excluded = true
+        check(!excluded)
+        excluded = true
     }
 
     fun check() = healthy
@@ -45,8 +45,6 @@ class Provider(
         healthy = true
     }
 
-    override fun toString() = "Provider[id=$id]"
-
 }
 
 data class ProviderId(
@@ -55,4 +53,6 @@ data class ProviderId(
     companion object {
         fun random() = ProviderId(UUID.randomUUID().toString())
     }
+
+    override fun toString() = value
 }
