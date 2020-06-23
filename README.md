@@ -44,3 +44,5 @@ Pay attention to the following:
 * Make random algorithm better testable by injecting some `Random` instance
 * Split `LoadBalancer` class base don seperate concerns
 * Feature to unregister providers
+* add some more inline KDoc
+* get clarity about requirements (needs of client, intentions, possible simplifications and future demands)
