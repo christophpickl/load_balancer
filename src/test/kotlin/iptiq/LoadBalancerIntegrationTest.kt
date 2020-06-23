@@ -34,8 +34,8 @@ class LoadBalancerIntegrationTest {
         val provider = Provider.any().markUnhealthy()
         val balancer = LoadBalancer().register(provider)
 
-        balancer.asyncJob()
-        balancer.asyncJob()
+        balancer.checkProviders()
+        balancer.checkProviders()
 
         assertThat(provider.excluded).isTrue()
     }
@@ -43,11 +43,11 @@ class LoadBalancerIntegrationTest {
     fun `Given unhealthy provider being excluded When checked as healthy again Then re-include it`() {
         val provider = Provider.any().markUnhealthy()
         val balancer = LoadBalancer().register(provider)
-        balancer.asyncJob()
+        balancer.checkProviders()
 
         provider.markHealthy()
-        balancer.asyncJob()
-        balancer.asyncJob()
+        balancer.checkProviders()
+        balancer.checkProviders()
 
         assertThat(provider.excluded).isFalse()
     }

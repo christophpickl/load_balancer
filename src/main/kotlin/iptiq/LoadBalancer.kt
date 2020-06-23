@@ -6,7 +6,7 @@ class LoadBalancer(
     private val provideAlgorithm: ProvideAlgorithm = RandomProvideAlgorithm(),
     private val maximumProviders: Int = DEFAULT_MAXIMUM_PROVIDERS,
     private val maximumRequestsPerProviders: Int = DEFAULT_MAXIMUM_REQUESTS_PER_PROVIDER
-) : ScheduledJob {
+) {
 
     companion object {
         private const val DEFAULT_MAXIMUM_PROVIDERS = 10
@@ -68,11 +68,7 @@ class LoadBalancer(
         }
     }
 
-    override fun asyncJob() {
-        checkProviders()
-    }
-
-    private fun checkProviders() {
+    fun checkProviders() {
         log.debug { "Checking unhealthy providers ..." }
         registeredProviders.forEach(::checkProvider)
     }
