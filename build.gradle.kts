@@ -32,10 +32,9 @@ tasks {
     withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-Xjsr305=strict", "-Xuse-experimental=io.ktor.util.KtorExperimentalAPI")
+            freeCompilerArgs = listOf("-Xjsr305=strict")
         }
     }
-
 
     withType<Test> {
         useTestNG {}
